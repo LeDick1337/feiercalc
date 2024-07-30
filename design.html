@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zeitrechner</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f0f2f5;
+            transition: background-color 0.3s ease;
+            font-family: 'Arial', sans-serif;
+        }
+        .container {
+            margin-top: 50px;
+            position: relative;
+        }
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border-bottom: none;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+        .card-body {
+            padding: 40px;
+            animation: fadeInAnimation 1s ease forwards;
+        }
+        .form-group {
+            margin-bottom: 30px;
+        }
+        .form-control {
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1em;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 30px;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            margin-top: 20px;
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+            transform: scale(1.05);
+        }
+        #result {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-top: 30px;
+            text-align: center;
+        }
+        .toggle-switch-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+        }
+        .toggle-switch {
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            position: relative;
+        }
+        .toggle-switch input[type="checkbox"] {
+            display: none;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input[type="checkbox"]:checked + .slider {
+            background-color: #667eea;
+        }
+        input[type="checkbox"]:checked + .slider:before {
+            transform: translateX(26px);
+        }
+        #current-time {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: #667eea;
+            font-size: 1.5em;
+            font-weight: bold;
+            background-color: #fff;
+            padding: 10px 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        @keyframes fadeInAnimation {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        .btn-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            text-align: center;
+            padding: 0;
+            font-size: 18px;
+            line-height: 60px;
+            margin: 5px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+        .btn-circle:hover {
+            background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+            transform: scale(1.1);
+        }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            margin-bottom: 20px; /* Added margin-bottom for spacing */
+        }
+        .language-select {
+            margin-right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            padding: 5px 10px;
+            font-size: 1em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="current-time"></div>
+
+    <div class="container">
+        <div class="toggle-switch-container">
+            <select id="language-select" class="language-select" onchange="changeLanguage()">
+                <option value="de">Deutsch</option>
+                <option value="en">English</option>
+            </select>
+            <label for="dark-mode-toggle" style="margin-left: 10px;">
+                <div class="toggle-switch">
+                    <input type="checkbox" id="dark-mode-toggle" onchange="toggleDarkMode()">
+                    <span class="slider"></span>
+                </div>
+                Dark Mode
+            </label>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header" id="header-title">
+                        Zeitrechner
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="time" id="time-label">Uhrzeit (hh:mm):</label>
+                            <input type="text" id="time" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="hours" id="hours-label">Stunden:</label>
+                            <input type="number" id="hours" class="form-control" value="7">
+                        </div>
+                        <div class="form-group">
+                            <label for="minutes" id="minutes-label">Minuten:</label>
+                            <input type="number" id="minutes" class="form-control" value="48">
+                        </div>
+                        <div class="form-group">
+                            <label for="break" id="break-label">Pause (Minuten):</label>
+                            <input type="number" id="break" class="form-control" value="30">
+                        </div>
+                        <div class="button-group">
+                            <button class="btn btn-circle" onclick="setWorkTime(6, 0, 0)">6h</button>
+                            <button class="btn btn-circle" onclick="setWorkTime(7, 48, 30)">7.48h</button>
+                            <button class="btn btn-circle" onclick="setWorkTime(10, 0, 45)">10.45h</button>
+                        </div>
+                        <button onclick="calculate()" class="btn btn-primary btn-block" id="calculate-btn">Berechnen</button>
+                        <div id="result"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            en: {
+                title: "Time Calculator",
+                time: "Time (hh:mm):",
+                hours: "Hours:",
+                minutes: "Minutes:",
+                break: "Break (Minutes):",
+                calculate: "Calculate",
+                endTime: "End Time at ",
+                difference: "",
+                darkMode: "Dark Mode",
+            },
+            de: {
+                title: "Zeitrechner",
+                time: "Uhrzeit (hh:mm):",
+                hours: "Stunden:",
+                minutes: "Minuten:",
+                break: "Pause (Minuten):",
+                calculate: "Berechnen",
+                endTime: "Feierabend um ",
+                difference: "",
+                darkMode: "Dark Mode",
+            }
+        };
+
+        function changeLanguage() {
+            const lang = document.getElementById('language-select').value;
+            document.getElementById('header-title').innerText = translations[lang].title;
+            document.getElementById('time-label').innerText = translations[lang].time;
+            document.getElementById('hours-label').innerText = translations[lang].hours;
+            document.getElementById('minutes-label').innerText = translations[lang].minutes;
+            document.getElementById('break-label').innerText = translations[lang].break;
+            document.getElementById('calculate-btn').innerText = translations[lang].calculate;
+            document.querySelector('label[for="dark-mode-toggle"]').lastChild.textContent = translations[lang].darkMode;
+        }
+
+        function toggleDarkMode() {
+            var darkModeToggle = document.getElementById('dark-mode-toggle');
+            var body = document.body;
+            if (darkModeToggle.checked) {
+                body.style.backgroundColor = '#343a40';
+            } else {
+                body.style.backgroundColor = '#f0f2f5';
+            }
+        }
+
+        document.getElementById('dark-mode-toggle').checked = true;
+        toggleDarkMode();
+
+        function leadingZero(number) {
+            return (number < 10 ? '0' : '') + number;
+        }
+
+        function updateClock() {
+            var now = new Date();
+            var hours = leadingZero(now.getHours());
+            var minutes = leadingZero(now.getMinutes());
+            var seconds = leadingZero(now.getSeconds());
+
+            var currentTime = hours + ':' + minutes + ':' + seconds;
+            document.getElementById('current-time').innerText = currentTime;
+        }
+
+        setInterval(updateClock, 1000);
+
+        function calculate() {
+            var timeInput = document.getElementById('time').value;
+            var hoursInput = parseInt(document.getElementById('hours').value);
+            var minutesInput = parseInt(document.getElementById('minutes').value);
+            var breakInput = parseInt(document.getElementById('break').value);
+
+            var time = new Date();
+            var timeParts = timeInput.split(':');
+            time.setHours(parseInt(timeParts[0]));
+            time.setMinutes(parseInt(timeParts[1]));
+
+            time.setHours(time.getHours() + hoursInput);
+            time.setMinutes(time.getMinutes() + minutesInput);
+            time.setMinutes(time.getMinutes() + breakInput);
+
+            var endHour = time.getHours();
+            var endMinute = time.getMinutes();
+
+            var lang = document.getElementById('language-select').value;
+
+            var result = '<span style="font-size: 1.5em;">' + translations[lang].endTime + endHour.toString().padStart(2, '0') + ':' + endMinute.toString().padStart(2, '0') + '</span>';
+
+            document.getElementById('result').innerHTML = result;
+            document.getElementById('result').style.color = 'darkgreen';
+        }
+
+        function setWorkTime(hours, minutes, breakMinutes) {
+            document.getElementById('hours').value = hours;
+            document.getElementById('minutes').value = minutes;
+            document.getElementById('break').value = breakMinutes;
+        }
+
+        changeLanguage();  // Set the initial language based on the default selection
+    </script>
+</body>
+</html>
