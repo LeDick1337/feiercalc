@@ -152,7 +152,7 @@
             display: flex;
             justify-content: center;
             margin-top: 20px;
-            margin-bottom: 20px; /* Added margin-bottom for spacing */
+            margin-bottom: 20px;
         }
         .language-select {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -206,6 +206,106 @@
             margin-bottom: 30px;
             color: #764ba2;
             text-shadow: 2px 2px #667eea;
+        }
+
+        /* Neon Theme Styles */
+        body.neon-mode {
+            background-color: black;
+            color: #00ff00;
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            overflow: hidden;
+            font-size: 0.9em; /* Anpassung der Standard-Schriftgröße im Neon-Stil */
+            cursor: none; /* Versteckt den Standard-Cursor im Neon-Modus */
+        }
+        body.neon-mode .card {
+            background-color: black;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 15px #00ff00;
+        }
+        body.neon-mode .card-header {
+            background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+            border-bottom: 2px solid #00ff00;
+        }
+        body.neon-mode .btn-primary, body.neon-mode .btn-circle {
+            background: linear-gradient(135deg, #00ff00 0%, #00cc00 100%);
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 10px #00ff00;
+            animation: buttonGlowNeon 1.5s infinite alternate;
+            font-size: 14px; /* Kleinere Schriftgröße für Buttons */
+            padding: 0;
+            line-height: 1.2;
+        }
+        body.neon-mode .btn-primary:hover, body.neon-mode .btn-circle:hover {
+            background-color: #00ff00;
+            color: black;
+        }
+        body.neon-mode #current-time, body.neon-mode .form-control {
+            color: #00ff00;
+            background-color: black;
+            border: 1px solid #00ff00;
+            font-size: 0.9em; /* Kleinere Schriftgröße für Formulareingaben */
+        }
+        body.neon-mode .page-title {
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            animation: neonTitleBlink 1.5s infinite alternate;
+        }
+        body.neon-mode::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                rgba(0, 255, 0, 0.3) 0%,
+                rgba(0, 255, 0, 0.3) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            animation: matrixRain 2s linear infinite;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Custom Cursor */
+        body.neon-mode .custom-cursor {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #00ff00;
+            border: 2px solid #00cc00;
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: 0 0 15px #00ff00, 0 0 25px #00cc00;
+            animation: cursorGlow 1s infinite alternate;
+            z-index: 10000;
+            display: none; /* Initially hidden */
+        }
+
+        @keyframes cursorGlow {
+            0% { transform: scale(1); box-shadow: 0 0 5px #00ff00, 0 0 10px #00cc00; }
+            100% { transform: scale(1.2); box-shadow: 0 0 15px #00ff00, 0 0 20px #00cc00; }
+        }
+
+        @keyframes buttonGlowNeon {
+            0% { box-shadow: 0 0 5px #00ff00; }
+            100% { box-shadow: 0 0 20px #00ff00; }
+        }
+
+        @keyframes neonTitleBlink {
+            0% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+
+        @keyframes matrixRain {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 0 100vh;
+            }
         }
     </style>
 </head>
@@ -275,6 +375,7 @@
                 endTime: "End Time at ",
                 difference: "Time difference: ",
                 darkMode: "Dark Mode",
+                hackerMode: "Neon Theme"
             },
             de: {
                 title: "Zeitrechner",
@@ -286,6 +387,7 @@
                 endTime: "Feierabend um ",
                 difference: "Zeitdifferenz: ",
                 darkMode: "Dark Mode",
+                hackerMode: "Neon Theme"
             }
         };
 
@@ -309,6 +411,22 @@
                 body.classList.remove('dark-mode');
             }
         }
+
+        let hackerKeySequence = ['h', 'a', 'c', 'k', 'e', 'r'];
+        let keyIndex = 0;
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key.toLowerCase() === hackerKeySequence[keyIndex]) {
+                keyIndex++;
+                if (keyIndex === hackerKeySequence.length) {
+                    document.body.classList.toggle('neon-mode');
+                    keyIndex = 0;
+                    toggleNeonCursor();
+                }
+            } else {
+                keyIndex = 0;
+            }
+        });
 
         document.getElementById('dark-mode-toggle').checked = true;
         toggleDarkMode();
@@ -381,6 +499,20 @@
             document.getElementById('hours').value = hours;
             document.getElementById('minutes').value = minutes;
             document.getElementById('break').value = breakMinutes;
+        }
+
+        // Custom Cursor
+        const cursor = document.createElement('div');
+        cursor.classList.add('custom-cursor');
+        document.body.appendChild(cursor);
+
+        document.addEventListener('mousemove', (e) => {
+            cursor.style.left = e.pageX + 'px';
+            cursor.style.top = e.pageY + 'px';
+        });
+
+        function toggleNeonCursor() {
+            cursor.style.display = document.body.classList.contains('neon-mode') ? 'block' : 'none';
         }
 
         changeLanguage();  // Set the initial language based on the default selection
